@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edición de Clients - El Torogoz</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            background-color: #f8f9fa;
+        }
+        .content {
+            flex: 1;
+        }
+        footer {
+            flex-shrink: 0;
+        }
+        .card {
+            max-width: 500px;
+            margin: auto;
+        }
+        .btn-success {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-md navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" id="redirectLink">
+            <i class="bi bi-shop me-2"></i> El Torogoz
+        </a>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" th:href="@{/clients}">Control de Clients</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Formulario -->
+<div class="container content mt-5">
+    <div class="card shadow">
+        <h3 class="card-header text-center text-primary">Edición de Clients</h3>
+        <div class="card-body">
+            <form th:action="@{/clients/{idClient}(idClient=${clients.idClient})}" th:object="${clients}" method="POST">
+                <div class="form-group mb-3">
+                    <label for="firstName">Nombre:</label>
+                    <input type="text" id="firstName" th:field="*{firstName}" class="form-control" placeholder="Ingrese el nombre del cliente" required />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="lastName">Apellido:</label>
+                    <input type="text" id="lastName" th:field="*{lastName}" class="form-control" placeholder="Ingrese el apellido del cliente" required />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="dateOfBirth">Fecha de nacimiento:</label>
+                    <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" class="form-control" required />
+                </div>
+
+                <div class="form-check mb-3">
+                    <input type="checkbox" id="isActive" th:field="*{isActive}" class="form-check-input" />
+                    <label for="isActive" class="form-check-label">Activo</label>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-save"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-primary text-white py-4 mt-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col">
+                <h6 class="fw-bold">Inversiones El Torogoz S.A.</h6>
+                <p class="small">© 2024 Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.getElementById('redirectLink').addEventListener('click', function (event) {
+        const userId = localStorage.getItem("userIdL"); // Obtén el userId del localStorage
+        if (userId) {
+            // Construir la URL con el userId y redirigir
+            window.location.href = `/redirect?userId=${userId}`;
+        } else {
+            // Cancelar el clic y mostrar alerta
+            event.preventDefault();
+            alert("No se encontró el usuario en la sesión. Por favor, inicia sesión nuevamente.");
+        }
+    });
+</script>
+
+</body>
+</html>
