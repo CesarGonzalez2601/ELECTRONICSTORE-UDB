@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Orden - El Torogoz</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            background-color: #f8f9fa;
+        }
+        .content {
+            flex: 1;
+        }
+        footer {
+            flex-shrink: 0;
+        }
+        .form-label {
+            font-weight: bold;
+        }
+        .btn-primary {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-md navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" id="redirectLink">
+            <i class="bi bi-shop me-2"></i> El Torogoz
+        </a>
+    </div>
+</nav>
+
+<!-- Contenido Principal -->
+<div class="container content mt-5">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="text-center text-primary fw-bold">Crear Orden</h1>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-lg-6 offset-lg-3">
+            <form th:action="@{/orders}" method="post" class="shadow p-4 rounded bg-white" id="orderForm">
+                <!-- Dropdown para Cliente -->
+                <div class="mb-3">
+                    <label for="clientId" class="form-label">Cliente:</label>
+                    <select id="clientId" name="clientId" class="form-select" required>
+                        <option value="" disabled selected>Seleccione un cliente</option>
+                        <option th:each="client : ${clients}"
+                                th:value="${client.idClient}"
+                                th:text="${client.firstName} + ' ' + ${client.lastName}">
+                            <!-- Este texto será reemplazado dinámicamente -->
+                        </option>
+                    </select>
+                </div>
+                <!-- Tipo de Orden -->
+                <div class="mb-3">
+                    <label for="orderType" class="form-label">Tipo de Orden:</label>
+                    <input type="text" id="orderType" name="orderType" class="form-control" placeholder="Ej. Domicilio, Recogida, etc." required>
+                </div>
+                <!-- Campo Oculto para CreatedBy -->
+                <input type="hidden" id="createdBy" name="createdBy">
+
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-save"></i> Guardar
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-primary text-white py-4">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col">
+                <h6 class="fw-bold">Inversiones El Torogoz S.A.</h6>
+                <p class="small">© 2024 Todos los derechos reservados. Guatemala.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Antes de enviar el formulario, llena el campo oculto con el userId de localStorage
+    document.getElementById('orderForm').addEventListener('submit', function (event) {
+        const userId = localStorage.getItem("userIdL"); // Obtén el userId del localStorage
+        if (userId) {
+            document.getElementById('createdBy').value = userId; // Asigna el userId al campo oculto
+        } else {
+            event.preventDefault(); // Cancela el envío si no hay userId
+            alert("No se encontró el usuario en la sesión. Por favor, inicia sesión nuevamente.");
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('redirectLink').addEventListener('click', function (event) {
+        const userId = localStorage.getItem("userIdL"); // Obtén el userId del localStorage
+        if (userId) {
+            // Construir la URL con el userId y redirigir
+            window.location.href = `/redirect?userId=${userId}`;
+        } else {
+            // Cancelar el clic y mostrar alerta
+            event.preventDefault();
+            alert("No se encontró el usuario en la sesión. Por favor, inicia sesión nuevamente.");
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('redirectLink').addEventListener('click', function (event) {
+        const userId = localStorage.getItem("userIdL"); // Obtén el userId del localStorage
+        if (userId) {
+            // Construir la URL con el userId y redirigir
+            window.location.href = `/redirect?userId=${userId}`;
+        } else {
+            // Cancelar el clic y mostrar alerta
+            event.preventDefault();
+            alert("No se encontró el usuario en la sesión. Por favor, inicia sesión nuevamente.");
+        }
+    });
+</script>
+
+</body>
+</html>
