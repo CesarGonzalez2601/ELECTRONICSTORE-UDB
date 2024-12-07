@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listado de Órdenes - El Torogoz</title>
-
-    <!-- Bootstrap 5 CSS -->
+    <title>Cola de Órdenes - El Torogoz</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
@@ -27,20 +25,18 @@
         .table-dark th {
             color: white;
         }
-        .btn-primary, .btn-danger, .btn-info {
+        .btn-primary, .btn-danger, .btn-info, .btn-success {
             margin-right: 5px;
         }
     </style>
 </head>
 <body>
 
-<!-- Navbar -->
 <nav class="navbar navbar-expand-md navbar-dark bg-primary">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" id="redirectLink">
             <i class="bi bi-shop me-2"></i> El Torogoz
         </a>
-        <!-- Navbar links -->
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
                 <li class="nav-item"><a class="nav-link" th:href="@{/orders}">Control de Órdenes</a></li>
@@ -49,67 +45,41 @@
     </div>
 </nav>
 
-<!-- Contenido Principal -->
 <div class="container content mt-5">
-    <div class="row">
-        <div class="col-lg-12">
-            <h1 class="text-center text-primary fw-bold">Lista de Órdenes</h1>
-        </div>
+    <h2 class="text-center text-primary fw-bold">Cola de Órdenes</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <form th:action="@{/orders/queue/sort}" method="get">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-sort-alpha-down"></i> Ordenar por Fecha</button>
+        </form>
+        <form th:action="@{/orders/queue/process}" method="post">
+            <button type="submit" class="btn btn-success"><i class="bi bi-arrow-down-circle"></i> Procesar Siguiente Orden</button>
+        </form>
     </div>
-    <div class="row mt-4">
-        <div class="col-lg-3">
-            <a th:href="@{/orders/create}" class="btn btn-primary btn-sm mb-3">
-                <i class="bi bi-plus-circle"></i> Agregar Orden
-            </a>
-        </div>
-    </div>
-    <!-- Tabla de Órdenes -->
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped mt-3">
         <thead class="table-dark">
         <tr>
-            <th>ID</th>
+            <th>#</th>
             <th>Cliente</th>
             <th>Tipo de Orden</th>
             <th>Estado</th>
-            <th>Creada por</th>
             <th>Fecha de Creación</th>
-            <th>Acciones</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="order : ${orders}">
-            <td th:text="${order.idOrder}">ID</td>
-            <td th:text="${order.clientId.firstName} + ' ' + ${order.clientId.lastName}">Cliente</td>
-            <td th:text="${order.orderType}">Tipo de Orden</td>
-            <td th:text="${order.status}">Estado</td>
-            <td th:text="${order.createdBy != null ? order.createdBy.employeeId.firstName : 'Desconocido'}"></td>
-            <td th:text="${order.creationDate != null ? #temporals.format(order.creationDate, 'yyyy-MM-dd HH:mm:ss') : 'Sin fecha'}"></td>
-            <td>
-                <a th:href="@{/orders/edit/{id}(id=${order.idOrder})}" class="btn btn-info btn-sm">
-                    <i class="bi bi-pencil-fill"></i> Editar
-                </a>
-                <form th:action="@{/orders/delete/{id}(id=${order.idOrder})}" method="post" class="d-inline">
-                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de que desea eliminar esta orden?');">
-                        <i class="bi bi-trash-fill"></i> Eliminar
-                    </button>
-                </form>
-
-                <a th:href="@{/orders/details/{id}(id=${order.idOrder})}" class="btn btn-warning btn-sm">
-                    <i class="bi bi-box-seam"></i> Gestionar Productos
-                </a>
-
-                <form th:action="@{/orders/{id}/queue/add(id=${order.idOrder})}" method="post" class="d-inline">
-                <button type="submit" class="btn btn-success btn-sm">
-                    <i class="bi bi-arrow-down-circle"></i> Añadir a Cola
-                </button>
-                </form>
-            </td>
+        <tr th:each="order, iterStat : ${orderQueue}">
+            <td th:text="${iterStat.index + 1}"></td>
+            <td th:text="${order.clientId.firstName + ' ' + order.clientId.lastName}"></td>
+            <td th:text="${order.orderType}"></td>
+            <td th:text="${order.status}"></td>
+            <td th:text="${order.creationDate}"></td>
         </tr>
         </tbody>
     </table>
+
+    <div th:if="${message}" class="alert alert-success mt-3" role="alert" th:text="${message}"></div>
+    <div th:if="${error}" class="alert alert-danger mt-3" role="alert" th:text="${error}"></div>
 </div>
 
-<!-- Footer -->
 <footer class="bg-primary text-white py-4">
     <div class="container">
         <div class="row text-center">
@@ -121,7 +91,6 @@
     </div>
 </footer>
 
-<!-- Bootstrap 5 JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     document.getElementById('redirectLink').addEventListener('click', function (event) {
