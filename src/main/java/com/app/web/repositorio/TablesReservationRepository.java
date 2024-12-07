@@ -13,8 +13,10 @@ import java.util.List;
 @Repository
 public interface TablesReservationRepository extends JpaRepository<TableReservations, Integer> {
 
-    @Query("SELECT r.tableId FROM TableReservations r WHERE r.status = 'Confirmada' " +
-            "AND (r.reservationStartDate < :endDate AND r.reservationEndDate > :startDate)")
+    @Query("SELECT t FROM Tables t WHERE t.isAbailable = true AND t NOT IN (" +
+            "SELECT r.tableId FROM TableReservations r " +
+            "WHERE r.status = 'Confirmada' " +
+            "AND (r.reservationStartDate < :endDate AND r.reservationEndDate > :startDate))")
     List<Tables> findReservedTables(@Param("startDate") LocalDateTime startDate,
                                     @Param("endDate") LocalDateTime endDate);
 }

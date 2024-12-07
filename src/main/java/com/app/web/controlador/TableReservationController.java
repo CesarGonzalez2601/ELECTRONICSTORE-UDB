@@ -31,6 +31,13 @@ public class TableReservationController {
     @Autowired
     private ClienteServicio clienteServicio;
 
+    @GetMapping("/all")
+    public String listarReservaciones(Model model) {
+        List<TableReservations> reservations = tableReservationService.listarTodasReservaciones(); // Método del servicio
+        model.addAttribute("reservations", reservations);
+        return "tables/all_reservations"; // Nombre de la vista Thymeleaf
+    }
+
     @GetMapping("/available-tables-selected")
     public String select(Model model) {
         model.addAttribute("clients", clienteServicio.listarTodosLosClientes());
