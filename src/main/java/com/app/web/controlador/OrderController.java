@@ -1,7 +1,5 @@
 package com.app.web.controlador;
 
-
-
 import com.app.web.entidad.OrderProducts;
 import com.app.web.entidad.Orders;
 import com.app.web.entidad.Products;
@@ -16,7 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -83,7 +80,7 @@ public class OrderController {
         orderProduct.setComments(comments);
 
         orderService.addProductToOrder(orderProduct);
-        return "redirect:/orders/details/" + id ;
+        return "redirect:/orders/details/" + id;
     }
 
     @PostMapping("/{id}/update-status")
@@ -99,11 +96,11 @@ public class OrderController {
 
         Users Usuario = usersRepository.getById(dispatchedBy);
 
-            order.setDispatchedby(Usuario);
-            order.setPreparedby(Usuario);
-            order.setStatus("Despachada"); // Cambiar el estado de la orden a "Despachada"
+        order.setDispatchedby(Usuario);
+        order.setPreparedby(Usuario);
+        order.setStatus("Despachada"); // Cambiar el estado de la orden a "Despachada"
 
-            orderService.saveOrder(order); // Actualizar la orden en la base de datos
+        orderService.saveOrder(order); // Actualizar la orden en la base de datos
 
         return "redirect:/orders"; // Redirigir a la lista de órdenes
     }
@@ -114,11 +111,58 @@ public class OrderController {
         Orders order = orderService.findOrderById(id);
 
         if (order != null) {
-            orderService.updateOrderStatus(id,"eliminada");
+            orderService.updateOrderStatus(id, "eliminada");
             return "redirect:/orders?success=OrderDeleted";
         } else {
             // Redirigir a la lista de órdenes con un mensaje de error
             return "redirect:/orders?error=OrderNotFound";
         }
     }
+
+    // *** Nuevas funcionalidades relacionadas con la cola de órdenes ***
+
+    // Mostrar la cola de órdenes
+    @GetMapping("/queue")
+    public String mostrarColaOrdenes(Model model) {
+        List<Orders> orderQueue = orderService.getOrderQueue();
+        model.addAttribute("orderQueue", orderQueue);
+        return "orders/order_queue";
+    }
+
+    // Ordenar la cola de órdenes por fecha de creación
+    @GetMapping("/queue/sort")
+    public String ordenarColaOrdenes(Model model) {
+        orderService.sortOrderQueueByCreationDate();
+        List<Orders> sortedQueue = orderService.getOrderQueue();
+        model.addAttribute("orderQueue", sortedQueue);
+        return "orders/order_queue";
+    }
+
+    // Procesar la próxima orden en la cola
+    @PostMapping("/queue/process")
+    public String procesarSiguienteOrden(Model model) {
+        try {
+            Orders processedOrder = orderService.processNextOrder();
+            model.addAttribute("message", "Orden procesada: " + processedOrder.getIdOrder());
+        } catch (RuntimeException e) {
+            model.addAttribute("error", "No hay órdenes en la cola para procesar.");
+        }
+        return "redirect:/orders/queue";
+    }
+
+    // Agregar una orden a la cola
+    @PostMapping("/{id}/queue/add")
+    public String agregarOrdenACola(@PathVariable Integer id, Model model) {
+        Orders order = orderService.findOrderById(id);
+        if (order != null) {
+            orderService.addOrderToQueue(order); // Llama al servicio para añadir la orden a la cola
+        }
+        // Obtén la cola actualizada para mostrar en la vista
+        List<Orders> orderQueue = orderService.getOrderQueue();
+        model.addAttribute("orderQueue", orderQueue);
+        return "orders/order_queue";
+    }
+
+
 }
+

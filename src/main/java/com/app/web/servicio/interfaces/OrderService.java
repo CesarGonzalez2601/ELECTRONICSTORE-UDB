@@ -12,4 +12,12 @@ public interface OrderService {
     void addProductToOrder(OrderProducts orderProduct);
     void updateOrderStatus(Integer orderId, String status);
     List<OrderProducts> findOrderProductsByOrderId(Integer orderId);
+
+    void sortOrderQueueByCreationDate();
+
+    List<Orders> getOrderQueue();
+
+    Orders processNextOrder();
+
+    void addOrderToQueue(Orders order);
 }
