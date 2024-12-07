@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recomendaciones - El Torogoz</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-md navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" id="redirectLink">
+            <i class="bi bi-shop me-2"></i> El Torogoz
+        </a>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h2 class="text-center text-primary fw-bold">Recomendaciones Personalizadas</h2>
+    <form th:action="@{/recommendations/products}" method="get" class="mt-4">
+        <div class="mb-3">
+            <label for="clientId" class="form-label fw-bold">Seleccione un Cliente</label>
+            <select id="clientId" name="clientId" class="form-select" required>
+                <option value="" disabled selected>Seleccione un cliente</option>
+                <option th:each="client : ${clients}"
+                        th:value="${client.idClient}"
+                        th:text="${client.firstName + ' ' + client.lastName}"></option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-search"></i> Consultar Recomendaciones
+        </button>
+    </form>
+</div>
+
+<footer class="bg-primary text-white py-4 mt-5">
+    <div class="container text-center">
+        <h6 class="fw-bold">Inversiones El Torogoz S.A.</h6>
+        <p class="small">© 2024 Todos los derechos reservados.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('redirectLink').addEventListener('click', function (event) {
+        const userId = localStorage.getItem("userIdL");
+        if (userId) {
+            window.location.href = `/redirect?userId=${userId}`;
+        } else {
+            event.preventDefault();
+            alert("No se encontró el usuario en la sesión. Por favor, inicia sesión nuevamente.");
+        }
+    });
+</script>
+
+</body>
+</html>
+
